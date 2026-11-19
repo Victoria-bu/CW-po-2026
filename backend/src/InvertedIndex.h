@@ -1,33 +1,59 @@
 #pragma once
-#include <atomic>
-#include <map>
+
+#include <array>
 #include <shared_mutex>
 #include <string>
-#include <vector>
 #include <unordered_map>
-#include <utility>
+#include <vector>
+
+#include "DataLoader.h"
 
 // Один знайдений документ
 struct SearchResult {
-  int docId = 0;
+  std::string docId;
   double score = 0;  // скільки різних слів запиту знайдено в документі
   std::string snippet;  // початок тексту документа
+};
+
+struct Posting {
+  int docId = 0;
+  int count = 0;
+};
+
+class IndexShard {
+ public:
+  void AddTerm(const std::string& term, int docId, int count);
+  std::vector<Posting> GetPostings(const std::string& term) const;
+  void Clear();
+
+ private:
+  std::unordered_map<std::string, std::vector<Posting>> terms;
+  mutable std::shared_mutex mutex;
 };
 
 class InvertedIndex {
  public:
   static std::vector<std::string> Tokenize(const std::string& text);
-  void AddDocument(int id, const std::string& text);
+
+  void AddDocument(const Document& doc);
   std::vector<SearchResult> Search(const std::vector<std::string>& words) const;
   void Clear();
   int DocumentCount() const;
 
- private:
-  static const int kMaxResults = 20;  // скільки результатів повертаємо
+private:
+  static constexpr std::size_t kShardCount = 64;
+  static constexpr std::size_t kMaxResults = 20;
 
-  std::unordered_map<std::string, std::vector<std::pair<int, int>>> index;
-  std::unordered_map<int, std::string> snippets;
+  static std::size_t ShardIndex(const std::string& term);
 
-  mutable std::shared_mutex indexLock;
-  std::atomic<int> documentCount{0};
+  struct DocInfo {
+    std::string filename;
+    std::string snippet;
+  };
+
+  std::array<IndexShard, kShardCount> shards;
+  std::unordered_map<int, DocInfo> docs;
+
+  mutable std::shared_mutex docsMutex;
+  mutable std::shared_mutex indexMutex;
 };

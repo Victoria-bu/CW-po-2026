@@ -2,9 +2,7 @@
 
 ThreadPool::ThreadPool(int threadCount) {
   for (int i = 0; i < threadCount; i++)
-    workers.emplace_back([this] {
-        WorkerLoop();
-    });
+    workers.emplace_back([this] { WorkerLoop(); });
 }
 
 ThreadPool::~ThreadPool() {
