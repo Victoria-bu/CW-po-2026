@@ -45,7 +45,7 @@ void ThreadPool::WorkerLoop() {
       taskQueue.pop();
     }
     task(); 
-       bool isAllDone = false;
+    bool isAllDone = false;
     {
       std::lock_guard<std::mutex> lock(queueMutex);
       tasksInProgress--;

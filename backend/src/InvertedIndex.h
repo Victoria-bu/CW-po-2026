@@ -8,11 +8,10 @@
 
 #include "DataLoader.h"
 
-// Один знайдений документ
 struct SearchResult {
   std::string docId;
-  double score = 0;  // скільки різних слів запиту знайдено в документі
-  std::string snippet;  // початок тексту документа
+  double score = 0; 
+  std::string snippet; 
 };
 
 struct Posting {
@@ -40,9 +39,8 @@ class InvertedIndex {
   void Clear();
   int DocumentCount() const;
 
-private:
+ private:
   static constexpr std::size_t kShardCount = 64;
-  static constexpr std::size_t kMaxResults = 20;
 
   static std::size_t ShardIndex(const std::string& term);
 

@@ -91,47 +91,49 @@ static bool IsBetter(const Match& a, const Match& b) {
 }
 
 std::vector<SearchResult> InvertedIndex::Search(
-    const std::vector<std::string>& words) const {
-  std::shared_lock<std::shared_mutex> indexLock(indexMutex);
-  std::shared_lock<std::shared_mutex> docsLock(docsMutex);
+  const std::vector<std::string>& words) const {
+    std::shared_lock<std::shared_mutex> indexLock(indexMutex);
+    std::shared_lock<std::shared_mutex> docsLock(docsMutex);
 
-  std::set<std::string> uniqueWords(words.begin(), words.end());
-  std::unordered_map<int, Match> matches;
+    std::set<std::string> uniqueWords(words.begin(), words.end());
+    std::unordered_map<int, Match> matches;
 
-  for (const std::string& word : uniqueWords) {
-    for (const Posting& posting : shards[ShardIndex(word)].GetPostings(word)) {
-      if (docs.find(posting.docId) == docs.end()) continue;
+    for (const std::string& word : uniqueWords) {
+      const auto postings = shards[ShardIndex(word)].GetPostings(word);
 
-      Match& match = matches[posting.docId];
-      match.docId = posting.docId;
-      ++match.matchedWords;
-      match.totalCount += posting.count;
+      for (const Posting& posting : postings) {
+        if (docs.find(posting.docId) == docs.end()) {
+          continue;
+        }
+
+        Match& match = matches[posting.docId];
+        match.docId = posting.docId;
+        ++match.matchedWords;
+        match.totalCount += posting.count;
+      }
     }
-  }
 
-  std::vector<Match> sorted;
-  sorted.reserve(matches.size());
-  for (const auto& entry : matches) {
-    sorted.push_back(entry.second);
-  }
-  std::sort(sorted.begin(), sorted.end(), IsBetter);
+    std::vector<Match> sorted;
 
-  if (sorted.size() > kMaxResults) {
-    sorted.resize(kMaxResults);
-  }
+    for (const auto& entry : matches) {
+      sorted.push_back(entry.second);
+    }
 
-  std::vector<SearchResult> results;
-  results.reserve(sorted.size());
-  for (const Match& match : sorted) {
-    const DocInfo& info = docs.at(match.docId);
-    SearchResult result;
-    result.docId = info.filename;
-    result.score = static_cast<double>(match.matchedWords);
-    result.snippet = info.snippet;
+    std::sort(sorted.begin(), sorted.end(), IsBetter);
 
-    results.push_back(result);
-  }
-  return results;
+    std::vector<SearchResult> results;
+
+    for (const Match& match : sorted) {
+      const DocInfo& info = docs.at(match.docId);
+
+      SearchResult result;
+      result.docId = info.filename;
+      result.score = static_cast<double>(match.matchedWords);
+      result.snippet = info.snippet;
+
+      results.push_back(result);
+    }
+    return results;
 }
 
 void InvertedIndex::Clear() {
