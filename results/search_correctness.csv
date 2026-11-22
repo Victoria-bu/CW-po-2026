@@ -1,0 +1,6 @@
+﻿query,expected,actual,status
+alice,Є результати,"28376_part1.txt, 11.txt, 28376_part2.txt",PASS
+rabbit,Є результати,"26429_part2.txt, 26429_part1.txt, 33948.txt",PASS
+wonderland,Є результати,"35138.txt, 28326_part2.txt, 31997.txt",PASS
+queen,Є результати,"28649_part2.txt, 28649_part1.txt, 19217_part1.txt",PASS
+zzzxqvnotaword987654321,Немає результатів,—,PASS
