@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fL -o /usr/local/include/httplib.h \
-    https://raw.githubusercontent.com/yhirose/cpp-httplib/v0.15.3/httplib.h
+    https://raw.githubusercontent.com/yhirose/cpp-httplib/v0.36.0/httplib.h
 
 WORKDIR /app
 COPY . .

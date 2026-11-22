@@ -8,7 +8,7 @@ services:
       - OLLAMA_PORT=11434
       - DATA_PATH=/data
     volumes:
-      - ./data:/data:ro
+      - ./data_10000:/data:ro
     depends_on:
       - ollama
 
