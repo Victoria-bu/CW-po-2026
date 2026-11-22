@@ -1,0 +1,142 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Coursework — Parallel Search</title>
+  <link rel="stylesheet" href="/style.css?v=2">
+</head>
+
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="site-header">
+    <a class="brand" href="/">
+      <span class="brand-mark">
+        <span></span><span></span><span></span>
+      </span>
+      Coursework
+    </a>
+
+    <div class="header-actions">
+      <button class="icon-button" id="openIndexButton" type="button"
+              aria-label="Index settings">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Parallel Document Search</h1>
+
+      <p class="hero-copy">
+        Search documents with keywords or expand your query using AI.
+      </p>
+
+      <form class="search-shell" id="searchForm">
+        <div class="search-row">
+          <svg class="search-icon" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="6.5"/>
+            <path d="m16 16 4 4"/>
+          </svg>
+
+          <input id="searchInput" type="search"
+                 placeholder="What are you looking for?" required>
+
+          <button class="search-button" type="submit">
+            <span>Search</span>
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12h14M14 7l5 5-5 5"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="search-options">
+          <div class="mode-control">
+            <button class="mode-button is-active" type="button"
+                    data-mode="keyword">Keyword</button>
+
+            <button class="mode-button" type="button"
+                    data-mode="expanded">
+              AI expanded <span class="spark">✦</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="results-section" id="resultsSection">
+      <div class="results-heading">
+        <div>
+          <p class="section-label">Search output</p>
+          <h2 id="resultsTitle">Ready when you are</h2>
+        </div>
+        <div class="result-meta" id="resultMeta"></div>
+      </div>
+
+      <div class="pipeline" id="pipeline" hidden></div>
+      <div class="results-list" id="resultsList"></div>
+    </section>
+
+    <section class="system-strip">
+      <article>
+        <span>Indexed documents</span>
+        <strong id="documentsStat">—</strong>
+      </article>
+
+      <article>
+        <span>Last index build</span>
+        <strong id="buildTimeStat">—</strong>
+      </article>
+
+      <article>
+        <span>Worker threads</span>
+        <strong id="threadsStat">—</strong>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="indexDialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-header">
+        <div>
+          <p class="section-label">Collection settings</p>
+          <h2>Build the index</h2>
+        </div>
+
+        <button class="icon-button" value="cancel"
+                aria-label="Close">
+          <svg viewBox="0 0 24 24">
+            <path d="m6 6 12 12M18 6 6 18"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="dialog-copy">
+        Choose the number of threads for parallel indexing.
+      </p>
+
+      <label class="range-label" for="threadRange">
+        <span>Worker threads</span>
+        <output id="threadOutput">4</output>
+      </label>
+
+      <input id="threadRange" type="range"
+             min="1" max="16" value="4">
+
+      <button class="primary-button" id="buildIndexButton"
+              type="button">
+        Build document index
+      </button>
+
+      <p class="dialog-message" id="indexMessage"></p>
+    </form>
+  </dialog>
+
+  <script src="/app.js?v=2" defer></script>
+</body>
+</html>
